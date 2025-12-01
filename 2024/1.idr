@@ -8,6 +8,10 @@ import Data.String
 import Data.Zippable
 import System.File
 
+(&&&) : (a -> b) -> (a -> c) -> a -> (b, c)
+(&&&) f g x = (f x, g x)
+infixr 3 &&&
+
 absDiff : Nat -> Nat -> Nat
 absDiff a b = minus (maximum a b) $ minimum a b
 
@@ -27,9 +31,10 @@ fileInput = mapHom (map (stringToNatOrZ . ltrim))
   . map (break (==' '))
 
 main : IO ()
-main = do file <- readFile "data/1.txt"
-          case file of
-            Left err => printLn err
-            Right content =>
-                let content' = fileInput $ lines $ content in
-                    printLn $ (partOne content', partTwo content')
+main = do
+  file <- readFile "data/1.txt"
+  case file of
+    Left err => printLn err
+    Right content =>
+      let content' = fileInput $ lines $ content in
+        printLn $ partOne &&& partTwo $ content'
