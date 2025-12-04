@@ -37,7 +37,7 @@ deleteFind :: Eq a => (a -> Bool) -> [a] -> Maybe (a, [a])
 deleteFind p xs = (\x -> (x, delete x xs)) <$> find p xs
 
 -- n is the largest index bound
-indexOfMax :: Int -> IntMap [Int] -> Maybe (Int, IntMap [Int])
+indexOfMax :: Ord a => a -> IntMap [a] -> Maybe (IntMap.Key, IntMap [a])
 indexOfMax n = liftMaybe . first (fst <$>) . IntMap.mapAccumRWithKey f Nothing
   where
     f Nothing k xs = case deleteFind (<=n) xs of
@@ -46,8 +46,9 @@ indexOfMax n = liftMaybe . first (fst <$>) . IntMap.mapAccumRWithKey f Nothing
     f (Just (k, i)) _ xs = (,) (Just (k, i)) $ dropWhile (<i) xs
 
 intFromList :: [Int] -> Int
-intFromList = foldr (\(n, k) -> (+ n * 10^k)) 0 . flip zip [0..] . reverse
+intFromList = foldr (\(n, k) -> (+ n * 10^k)) 0 . flip zip [(0 :: Int)..] . reverse
 
+-- should be O(n) :)
 partTwo :: [T.Text] -> Int
 partTwo = sum . map (maxJolts . unpackDigits)
   where
